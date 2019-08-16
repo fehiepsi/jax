@@ -1526,7 +1526,10 @@ logspace = _wrap_numpy_nullary_function(onp.logspace)
 geomspace = _wrap_numpy_nullary_function(onp.geomspace)
 
 @_wraps(onp.meshgrid)
-def meshgrid(*args, indexing='xy', sparse=False, copy=True):
+def meshgrid(*args, **kwargs):
+  indexing = kwargs.get("indexing", "xy")
+  sparse = kwargs.get("sparse", False)
+  copy = kwargs.get("copy", True)
   if not copy:
     raise ValueError("jax.numpy.meshgrid only supports copy=True")
 
@@ -1551,7 +1554,7 @@ def meshgrid(*args, indexing='xy', sparse=False, copy=True):
     a = asarray(a)
     s = shape
     if sparse:
-      s = s.copy()
+      s = list(s)
       s[i] = a.shape[0]
     output.append(lax.broadcast_in_dim(a, s, (i,)))
 
